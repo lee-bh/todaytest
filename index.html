@@ -3,37 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>계절 소개 페이지</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f5f3ee;
+            --paper: #fffdfa;
+            --ink: #1c1b1a;
+            --muted: #6f6a63;
+            --rule: #d9d2c8;
+            --accent: #3c5a7a;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Gowun Batang", "Nanum Myeongjo", "Malgun Myeongjo", serif;
+            background: linear-gradient(180deg, #f2efe8 0%, var(--bg) 45%, var(--bg) 100%);
+            color: var(--ink);
+        }
+
+        nav {
+            padding: 18px 24px 14px;
+            border-bottom: 1px solid var(--rule);
+            font-family: "Gowun Batang", "Nanum Myeongjo", "Malgun Myeongjo", serif;
+            font-size: 0.78rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        header {
+            max-width: 980px;
+            margin: 42px auto 26px;
+            padding: 0 24px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: clamp(2rem, 5vw, 4.3rem);
+            line-height: 1.06;
+            font-weight: 500;
+            letter-spacing: -0.015em;
+        }
+
+        .intro {
+            margin-top: 16px;
+            max-width: 720px;
+            padding-top: 14px;
+            border-top: 2px solid var(--ink);
+            font-family: "Gowun Batang", "Nanum Myeongjo", "Malgun Myeongjo", serif;
+            color: var(--muted);
+            font-size: 0.96rem;
+            line-height: 1.7;
+        }
+
+        main {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 8px 24px 40px;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 24px 26px;
+        }
+
+        section {
+            background: var(--paper);
+            border: 1px solid var(--rule);
+            transition: border-color 0.2s ease;
+        }
+
+        section:hover {
+            border-color: #b6aea2;
+        }
+
+        .container {
+            padding: 22px 22px 24px;
+        }
+
+        h2 {
+            margin: 0 0 12px;
+            font-size: 1.45rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        p {
+            margin: 0;
+            font-family: "Gowun Batang", "Nanum Myeongjo", "Malgun Myeongjo", serif;
+            line-height: 1.7;
+            color: #3b3833;
+            font-weight: 400;
+        }
+
+        footer {
+            margin-top: 10px;
+            padding: 20px 24px 34px;
+            text-align: center;
+            font-family: "Gowun Batang", "Nanum Myeongjo", "Malgun Myeongjo", serif;
+            font-weight: 500;
+            font-size: 0.8rem;
+            color: var(--muted);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            border-top: 1px solid var(--rule);
+        }
+
+        @media (max-width: 760px) {
+            main {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+
+            header {
+                margin-top: 30px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <nav></nav>
+    <nav>Seasonal Journal</nav>
     <header>
         <h1>이것은 테스트용입니다</h1>
+        <p class="intro">사계절의 특징을 간단하게 소개하는 카드형 레이아웃입니다.</p>
     </header>
-    <section>
-        <div class="container">
-            <h2>봄의 내용</h2>
-            <p>봄에는 새가 지저귑니다.</p>
-        </div>
-    </section>
-    <section>
-        <div class="container">
-            <h2>여름의 내용</h2>
-            <p>여름에는 해가 뜹니다.</p>
-        </div>
-    </section>
-    <section>
-        <div class="container">
-            <h2>가을의 내용</h2>
-            <p>가을에는 단풍이 듭니다.</p>
-        </div>
-    </section>
-    <section>
-        <div class="container">
-            <h2>겨울의 내용</h2>
-            <p>겨울에는 눈이 옵니다.</p>
-        </div>
-    </section>
+    <main>
+        <section>
+            <div class="container">
+                <h2>봄의 내용</h2>
+                <p>봄에는 새가 지저귑니다.</p>
+            </div>
+        </section>
+        <section>
+            <div class="container">
+                <h2>여름의 내용</h2>
+                <p>여름에는 해가 뜹니다.</p>
+            </div>
+        </section>
+        <section>
+            <div class="container">
+                <h2>가을의 내용</h2>
+                <p>가을에는 단풍이 듭니다.</p>
+            </div>
+        </section>
+        <section>
+            <div class="container">
+                <h2>겨울의 내용</h2>
+                <p>겨울에는 눈이 옵니다.</p>
+            </div>
+        </section>
+    </main>
     <footer>
         <p>@2025 4분기 프로모션</p>
     </footer>
