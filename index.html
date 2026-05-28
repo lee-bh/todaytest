@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>13주차 과제 현황판</title>
+    <meta name="description" content="13주차 학생별 과제 제출 현황을 볼 수 있는 심플한 미니멀 대시보드입니다.">
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #111827;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --submitted-color: #059669;
+            --submitted-bg: #ecfdf5;
+            --unsubmitted-color: #d1d5db;
+            --unsubmitted-bg: #f9fafb;
+            --accent-color: #2563eb;
+            --accent-bg: #eff6ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 2rem 1rem;
+            line-height: 1.4;
+        }
+
+        .container {
+            max-width: 1080px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+            margin-bottom: 0.25rem;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Summary Stats Bar */
+        .stats-bar {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+        }
+
+        .stat-val {
+            font-weight: 600;
+        }
+
+        /* Controls: Search & Tabs */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (min-width: 640px) {
+            .controls {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+
+        .search-box input {
+            width: 100%;
+            min-width: 280px;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .search-box input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .filter-tabs {
+            display: flex;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .tab-btn:last-child {
+            border-right: none;
+        }
+
+        .tab-btn.active {
+            background-color: var(--unsubmitted-bg);
+            color: var(--text-color);
+            font-weight: 600;
+        }
+
+        /* Minimal Card Grid */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1rem;
+        }
+
+        /* Card */
+        .card {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 180px;
+            background-color: var(--bg-color);
+            transition: border-color 0.15s ease;
+        }
+
+        .card:hover {
+            border-color: #9ca3af;
+        }
+
+        .card.submitted {
+            border-left: 3px solid var(--submitted-color);
+        }
+
+        .card.unsubmitted {
+            border-left: 3px solid var(--unsubmitted-color);
+            opacity: 0.75;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .student-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .student-id {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.125rem 0.375rem;
+            border-radius: 3px;
+        }
+
+        .status-badge.submitted {
+            background-color: var(--submitted-bg);
+            color: var(--submitted-color);
+        }
+
+        .status-badge.unsubmitted {
+            background-color: #f3f4f6;
+            color: var(--text-muted);
+        }
+
+        .card-body {
+            font-size: 0.825rem;
+            color: var(--text-muted);
+            margin-bottom: auto;
+        }
+
+        .info-row {
+            margin-bottom: 0.125rem;
+        }
+
+        .info-row span {
+            color: var(--text-color);
+        }
+
+        .card-footer {
+            margin-top: 1rem;
+        }
+
+        .link-btn {
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            padding: 0.375rem;
+            font-size: 0.85rem;
+            font-weight: 550;
+            text-decoration: none;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            transition: all 0.15s ease;
+        }
+
+        .card.submitted .link-btn {
+            background-color: var(--bg-color);
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .card.submitted .link-btn:hover {
+            background-color: var(--accent-bg);
+        }
+
+        .card.unsubmitted .link-btn {
+            background-color: #f9fafb;
+            color: #9ca3af;
+            border-color: var(--border-color);
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* Empty State */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem 1rem;
+            border: 1px dashed var(--border-color);
+            border-radius: 6px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1 id="main-title">13주차 과제 제출 현황</h1>
+            <p class="subtitle" id="subtitle-text">학생별 13주차 과제물 목록 대시보드</p>
+        </header>
+
+        <!-- Stats Section -->
+        <div class="stats-bar" role="status" aria-label="통계 요약">
+            <div class="stat-item">
+                <span class="stat-label">수강생:</span>
+                <span class="stat-val" id="total-count">0명</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">제출:</span>
+                <span class="stat-val" id="submitted-count" style="color: var(--submitted-color);">0명</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">미제출:</span>
+                <span class="stat-val" id="unsubmitted-count">0명</span>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls" aria-label="필터 및 검색">
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="이름 또는 학번 검색...">
+            </div>
+            <div class="filter-tabs" role="tablist">
+                <button class="tab-btn active" id="tab-all" role="tab" aria-selected="true" onclick="setFilter('all')">전체</button>
+                <button class="tab-btn" id="tab-submitted" role="tab" aria-selected="false" onclick="setFilter('submitted')">제출</button>
+                <button class="tab-btn" id="tab-unsubmitted" role="tab" aria-selected="false" onclick="setFilter('unsubmitted')">미제출</button>
+            </div>
+        </div>
+
+        <!-- Main Card Grid -->
+        <main class="card-grid" id="student-grid">
+            <!-- Dynamic cards will be rendered here -->
+        </main>
+    </div>
+
+    <!-- Student Data and App Logic -->
+    <script>
+        const students = [
+            { "idx": "1", "major": "시각디자인전공", "studentId": "23100971", "grade": "3", "name": "감이지", "email": "karmyiji0418@gmail.com", "github": "https://github.com/karmyiji0418-tech", "w13": "13주차-감이지" },
+            { "idx": "2", "major": "시각디자인전공", "studentId": "24101003", "grade": "3", "name": "김유빈", "email": "yubins0124@naver.com", "github": "https://github.com/neokong124", "w13": "" },
+            { "idx": "3", "major": "시각디자인전공", "studentId": "23100981", "grade": "2", "name": "김유신", "email": "gotham0422@gmail.com", "github": "https://github.com/yusin0422", "w13": "" },
+            { "idx": "4", "major": "시각디자인전공", "studentId": "22100985", "grade": "2", "name": "김준희", "email": "juni20032003@gmail,,com", "github": "https://github.com/gon06123", "w13": "13주차-김준희" },
+            { "idx": "5", "major": "시각디자인전공", "studentId": "24101008", "grade": "3", "name": "김채윤", "email": "kcyhuman@gmail.com", "github": "https://github.com/kimchaeyun-seoultech", "w13": "13주차-김채윤" },
+            { "idx": "6", "major": "시각디자인전공", "studentId": "24102607", "grade": "2", "name": "모하메드 이즈", "email": "ezzypro04@gmail.com", "github": "https://github.com/ezzyeasy", "w13": "" },
+            { "idx": "7", "major": "시각디자인전공", "studentId": "25100966", "grade": "2", "name": "문지연", "email": "answll2510@gmail.com", "github": "https://github.com/jjjjjiyeon", "w13": "13주차-문지연" },
+            { "idx": "8", "major": "시각디자인전공", "studentId": "23102516", "grade": "3", "name": "부 티 프엉 아잉", "email": "phucanh1207@gmail.com", "github": "https://github.com/phucanh1207-cloud", "w13": "" },
+            { "idx": "10", "major": "시각디자인전공", "studentId": "24101022", "grade": "3", "name": "신재윤", "email": "s4153613@gmail.com", "github": "https://github.com/jaeyoon-11", "w13": "12주차-신재윤" },
+            { "idx": "11", "major": "시각디자인전공", "studentId": "24101037", "grade": "3", "name": "이수현", "email": "yttb7225@gmail.com", "github": "https://github.com/suheoyn", "w13": "13주차-이수현" },
+            { "idx": "12", "major": "경영학전공(학부)", "studentId": "24100842", "grade": "2", "name": "정지현", "email": "24100842nuri@gmail.com", "github": "https://github.com/jihyeon394", "w13": "13주차-정지현" },
+            { "idx": "13", "major": "시각디자인전공", "studentId": "24101044", "grade": "2", "name": "조도겸", "email": "scubado2005@gmail.com", "github": "https://github.com/aurhehw", "w13": "" },
+            { "idx": "14", "major": "시각디자인전공", "studentId": "24101045", "grade": "2", "name": "조윤진", "email": "yunjinjo12@gmail.com", "github": "https://github.com/yunjin12", "w13": "12주차-조윤진" },
+            { "idx": "15", "major": "시각디자인전공", "studentId": "25101004", "grade": "2", "name": "조윤하", "email": "mgjstoto@gmail.com", "github": "https://github.com/mgjstoto", "w13": "13주차-조윤하" },
+            { "idx": "17", "major": "시각디자인전공", "studentId": "23101018", "grade": "4", "name": "하스나누딘", "email": "syfqhizzti@gmail.com", "github": "https://github.com/eqaah16", "w13": "13주차-이카" },
+            { "idx": "19", "major": "시각디자인전공", "studentId": "22100995", "grade": "3", "name": "안상준", "email": "ahnsangjun5@gmail.com", "github": "https://github.com/ahnsangjun5", "w13": "13주차_안상준" },
+            { "idx": "20", "major": "시각디자인전공", "studentId": "24101018", "grade": "3", "name": "박지아", "email": "a74361994@gmail.com", "github": "https://github.com/shabo1719", "w13": "13주차-박지아" },
+            { "idx": "21", "major": "시각디자인전공", "studentId": "20101019", "grade": "", "name": "우지윤", "email": "dnwldbs927@gmail.com", "github": "우지윤_github", "w13": "" },
+            { "idx": "22", "major": "시각디자인전공", "studentId": "25101007", "grade": "2", "name": "최진주", "email": "choijinjoo6@gmail.com", "github": "https://github.com/mignon888", "w13": "" },
+            { "idx": "23", "major": "산업디자인전공", "studentId": "24100972", "grade": "3", "name": "이태림", "email": "taaaem916@gmail.com", "github": "https://github.com/rim-crypto", "w13": "" },
+            { "idx": "24", "major": "시각디자인전공", "studentId": "24101025", "grade": "3", "name": "아이나", "email": "ainasurfina1104@gmail.com", "github": "https://github.com/ainasrf", "w13": "" },
+            { "idx": "25", "major": "시각디자인전공", "studentId": "24101031", "grade": "3", "name": "이가인", "email": "gain04728@gmail.com", "github": "가인리의깃허브", "w13": "" },
+            { "idx": "26", "major": "시각디자인전공", "studentId": "24101019", "grade": "3", "name": "배수린", "email": "surin041116@gmail.com", "github": "https://github.com/surinie", "w13": "" },
+            { "idx": "27", "major": "시각디자인전공", "studentId": "24101041", "grade": "3", "name": "이혜성", "email": "gptjd0472@gmail.com", "github": "https://github.com/comet-ai472", "w13": "13주차-이혜성" },
+            { "idx": "28", "major": "금속공예디자인전공", "studentId": "21100847", "grade": "", "name": "강다영", "email": "mingsera@gmail.com", "github": "https://github.com/mingsera-0", "w13": "14주차-강다영" }
+        ];
+
+        let currentFilter = 'all';
+        let searchQuery = '';
+
+        function getAssignmentLink(student) {
+            if (!student.w13 || !student.github || !student.github.startsWith('http')) {
+                return '#';
+            }
+            try {
+                const username = student.github.replace('https://github.com/', '').split('/')[0].trim();
+                return `https://${username}.github.io/todaytest/`;
+            } catch (e) {
+                console.error(e);
+                return '#';
+            }
+        }
+
+        function initDashboard() {
+            const total = students.length;
+            const submitted = students.filter(s => s.w13 !== '').length;
+            const unsubmitted = total - submitted;
+
+            document.getElementById('total-count').textContent = `${total}명`;
+            document.getElementById('submitted-count').textContent = `${submitted}명`;
+            document.getElementById('unsubmitted-count').textContent = `${unsubmitted}명`;
+
+            renderCards();
+
+            document.getElementById('search-input').addEventListener('input', (e) => {
+                searchQuery = e.target.value.toLowerCase().trim();
+                renderCards();
+            });
+        }
+
+        function setFilter(filterType) {
+            currentFilter = filterType;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-selected', 'false');
+            });
+
+            const activeBtn = document.getElementById(`tab-${filterType}`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+                activeBtn.setAttribute('aria-selected', 'true');
+            }
+
+            renderCards();
+        }
+
+        function renderCards() {
+            const grid = document.getElementById('student-grid');
+            grid.innerHTML = '';
+
+            const filtered = students.filter(student => {
+                const matchesFilter = 
+                    currentFilter === 'all' ||
+                    (currentFilter === 'submitted' && student.w13 !== '') ||
+                    (currentFilter === 'unsubmitted' && student.w13 === '');
+
+                const matchesSearch = 
+                    student.name.toLowerCase().includes(searchQuery) ||
+                    student.studentId.includes(searchQuery) ||
+                    student.major.toLowerCase().includes(searchQuery);
+
+                return matchesFilter && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="empty-state">해당 학생이 없습니다.</div>`;
+                return;
+            }
+
+            filtered.forEach(student => {
+                const isSubmitted = student.w13 !== '';
+                const cardClass = isSubmitted ? 'card submitted' : 'card unsubmitted';
+                const badgeClass = isSubmitted ? 'status-badge submitted' : 'status-badge unsubmitted';
+                const badgeText = isSubmitted ? '제출 완료' : '미제출';
+                const link = getAssignmentLink(student);
+                const buttonId = `btn-${student.studentId}`;
+                const gradeText = student.grade ? `${student.grade}학년` : '정보 없음';
+
+                const cardHTML = `
+                    <article class="${cardClass}" id="card-${student.studentId}">
+                        <div>
+                            <div class="card-header">
+                                <div class="student-info">
+                                    <h2 class="student-name">${student.name}</h2>
+                                    <span class="student-id">${student.studentId}</span>
+                                </div>
+                                <span class="${badgeClass}">${badgeText}</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="info-row">학과: <span>${student.major}</span></div>
+                                <div class="info-row">학년: <span>${gradeText}</span></div>
+                                ${isSubmitted ? `<div class="info-row">폴더: <span>${student.w13}</span></div>` : ''}
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            ${isSubmitted 
+                                ? `<a id="${buttonId}" href="${link}" target="_blank" rel="noopener noreferrer" class="link-btn">과제 확인</a>`
+                                : `<button id="${buttonId}" class="link-btn" disabled>미제출</button>`
+                            }
+                        </div>
+                    </article>
+                `;
+                grid.insertAdjacentHTML('beforeend', cardHTML);
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+</body>
+</html>
